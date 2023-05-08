@@ -7,20 +7,16 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Pet Care App</title>
+        <title>Stat Tracker</title>
       </Head>
 
       <div className="top-bar">
         <div className="nav">
           <Link href="/">Home</Link>
-          <Link href="/new">Add Pet</Link>
+          <Link href="/new">Add Stats</Link>
         </div>
 
-        <img
-          id="title"
-          src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Pet_logo_with_flowers.png"
-          alt="pet care logo"
-        ></img>
+        <h2 id="title">Stat Tracker </h2>
       </div>
       <div className="grid wrapper">
         <Component {...pageProps} />
@@ -29,4 +25,4 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default MyApp
+export default MyApp;

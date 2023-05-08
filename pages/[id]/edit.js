@@ -1,38 +1,36 @@
-import { useRouter } from 'next/router'
-import useSWR from 'swr'
-import Form from '../../components/Form'
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import Form from '../../components/Form';
 
 const fetcher = (url) =>
   fetch(url)
     .then((res) => res.json())
     .then((json) => json.data)
 
-const EditPet = () => {
+const EditStats = () => {
   const router = useRouter()
   const { id } = router.query
   const {
-    data: pet,
+    data: stats,
     error,
     isLoading,
-  } = useSWR(id ? `/api/pets/${id}` : null, fetcher)
+  } = useSWR(id ? `/api/stats/${id}` : null, fetcher)
 
   if (error) return <p>Failed to load</p>
   if (isLoading) return <p>Loading...</p>
-  if (!pet) return null
+  if (!stats) return null
 
-  const petForm = {
-    name: pet.name,
-    owner_name: pet.owner_name,
-    species: pet.species,
-    age: pet.age,
-    poddy_trained: pet.poddy_trained,
-    diet: pet.diet,
-    image_url: pet.image_url,
-    likes: pet.likes,
-    dislikes: pet.dislikes,
+  const statsForm = {
+    play_type: stats.play_type,
+    run_attempts: stats.run_attempts,
+    run_forGain: stats.run_forGain,
+    rushing_yds: stats.rushing_yds,
+    pass_attempts: stats.pass_attempts,
+    pass_completions: stats.pass_completions,
+    total_passingYds: stats.total_passingYds
   }
 
-  return <Form formId="edit-pet-form" petForm={petForm} forNewPet={false} />
+  return <Form formId="edit-stats-form" statsForm={statsForm} forNewStats={false} />
 }
 
-export default EditPet
+export default EditStats;

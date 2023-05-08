@@ -1,23 +1,21 @@
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import { mutate } from 'swr'
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { mutate } from 'swr';
 
-const Form = ({ formId, petForm, forNewPet = true }) => {
-  const router = useRouter()
-  const contentType = 'application/json'
-  const [errors, setErrors] = useState({})
-  const [message, setMessage] = useState('')
+const Form = ({ formId, statsForm, forNewStats = true }) => {
+  const router = useRouter();
+  const contentType = 'application/json';
+  const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
 
   const [form, setForm] = useState({
-    name: petForm.name,
-    owner_name: petForm.owner_name,
-    species: petForm.species,
-    age: petForm.age,
-    poddy_trained: petForm.poddy_trained,
-    diet: petForm.diet,
-    image_url: petForm.image_url,
-    likes: petForm.likes,
-    dislikes: petForm.dislikes,
+    play_type: statsForm.play_type,
+    run_attempts: statsForm.run_attempts,
+    run_forGain: statsForm.run_forGain,
+    rushing_yds: statsForm.rushing_yds,
+    pass_attempts: statsForm.pass_attempts,
+    pass_completions: statsForm.pass_completions,
+    total_passingYds: statsForm.total_passingYds,
   })
 
   /* The PUT method edits an existing entry in the mongodb database. */
@@ -25,7 +23,7 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
     const { id } = router.query
 
     try {
-      const res = await fetch(`/api/pets/${id}`, {
+      const res = await fetch(`/api/stats/${id}`, {
         method: 'PUT',
         headers: {
           Accept: contentType,
@@ -41,7 +39,7 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
 
       const { data } = await res.json()
 
-      mutate(`/api/pets/${id}`, data, false) // Update the local data without a revalidation
+      mutate(`/api/stats/${id}`, data, false) // Update the local data without a revalidation
       router.push('/')
     } catch (error) {
       setMessage('Failed to update pet')
@@ -51,7 +49,7 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (form) => {
     try {
-      const res = await fetch('/api/pets', {
+      const res = await fetch('/api/stats', {
         method: 'POST',
         headers: {
           Accept: contentType,
@@ -74,7 +72,7 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
   const handleChange = (e) => {
     const target = e.target
     const value =
-      target.name === 'poddy_trained' ? target.checked : target.value
+      target.name === 'run_forGain' ? target.checked : target.value
     const name = target.name
 
     setForm({
@@ -83,13 +81,10 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
     })
   }
 
-  /* Makes sure pet info is filled for pet name, owner name, species, and image url*/
+  /* Makes sure stats info is filled for play type*/
   const formValidate = () => {
     let err = {}
-    if (!form.name) err.name = 'Name is required'
-    if (!form.owner_name) err.owner_name = 'Owner is required'
-    if (!form.species) err.species = 'Species is required'
-    if (!form.image_url) err.image_url = 'Image URL is required'
+    if (!form.play_type) err.play_type = 'Play type is required'
     return err
   }
 
@@ -97,7 +92,7 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
     e.preventDefault()
     const errs = formValidate()
     if (Object.keys(errs).length === 0) {
-      forNewPet ? postData(form) : putData(form)
+      forNewStats ? postData(form) : putData(form)
     } else {
       setErrors({ errs })
     }
@@ -106,83 +101,61 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
   return (
     <>
       <form id={formId} onSubmit={handleSubmit}>
-        <label htmlFor="name">Name</label>
+        <label htmlFor="play_type">Play Type</label>
         <input
           type="text"
           maxLength="20"
-          name="name"
-          value={form.name}
+          name="play_type"
+          value={form.play_type}
           onChange={handleChange}
           required
         />
 
-        <label htmlFor="owner_name">Owner</label>
-        <input
-          type="text"
-          maxLength="20"
-          name="owner_name"
-          value={form.owner_name}
-          onChange={handleChange}
-          required
-        />
+        <label htmlFor="run_forGain" class="toggle-switch-label" for="toggleSwitch">
+          Did the play gain any yards?
+        </label>
+        <input type="checkbox" class="toggle-switch-checkbox" name="toggleSwitch" id="toggleSwitch" />
 
-        <label htmlFor="species">Species</label>
-        <input
-          type="text"
-          maxLength="30"
-          name="species"
-          value={form.species}
-          onChange={handleChange}
-          required
-        />
-
-        <label htmlFor="age">Age</label>
+        <label htmlFor="run_attempts">Run Attempts</label>
         <input
           type="number"
-          name="age"
-          value={form.age}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="poddy_trained">Potty Trained</label>
-        <input
-          type="checkbox"
-          name="poddy_trained"
-          checked={form.poddy_trained}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="diet">Diet</label>
-        <textarea
-          name="diet"
-          maxLength="60"
-          value={form.diet}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="image_url">Image URL</label>
-        <input
-          type="url"
-          name="image_url"
-          value={form.image_url}
+          maxLength="30"
+          name="run_attempts"
+          value={form.run_attempts}
           onChange={handleChange}
           required
         />
 
-        <label htmlFor="likes">Likes</label>
-        <textarea
-          name="likes"
-          maxLength="60"
-          value={form.likes}
+        <label htmlFor="rushing_yds">Rushing Yards</label>
+        <input
+          type="number"
+          name="rushing_yds"
+          value={form.rushing_yds}
           onChange={handleChange}
         />
 
-        <label htmlFor="dislikes">Dislikes</label>
-        <textarea
-          name="dislikes"
-          maxLength="60"
-          value={form.dislikes}
+        <label htmlFor="pass_attempts">Pass Attempts</label>
+        <input
+          type="number"
+          name="pass_attempts"
+          checked={form.pass_attempts}
           onChange={handleChange}
+        />
+
+        <label htmlFor="pass_completions">Completions</label>
+        <textarea
+          name="pass_completions"
+          value={form.pass_completions}
+          onChange={handleChange}
+        />
+
+        <label htmlFor="total_passingYds">Total Passing Yards</label>
+        <input
+          type="number"
+          name="total_passingYds"
+          value={form.total_passingYds}
+          onChange={handleChange}
+          required
         />
 
         <button type="submit" className="btn">
@@ -199,4 +172,4 @@ const Form = ({ formId, petForm, forNewPet = true }) => {
   )
 }
 
-export default Form
+export default Form;
